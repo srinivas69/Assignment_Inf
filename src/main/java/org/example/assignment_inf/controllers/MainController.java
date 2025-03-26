@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.concurrent.ExecutionException;
@@ -51,5 +53,14 @@ public class MainController {
             logger.error(e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
+    }
+
+    // simple socket communication to send message between client and server
+    // The client sends the messages and these messages are broadcasted to all the clients connected to the server.
+    @MessageMapping("/send_message")
+    @SendTo("/topic/messages")
+    public String sendMessage(String message) {
+        logger.info("Socket Message: " + message);
+        return message;
     }
 }
