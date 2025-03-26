@@ -1,10 +1,12 @@
-package org.example.assignment_inf.controllers;
+package org.example.assignment_inf.controller;
 
+import org.example.assignment_inf.dtos.EmployeeHoursSummaryDto;
 import org.example.assignment_inf.exceptions.CustomersNotFoundException;
 import org.example.assignment_inf.exceptions.ProductsNotAvailable;
 import org.example.assignment_inf.models.CityRequest;
-import org.example.assignment_inf.models.Customer;
-import org.example.assignment_inf.services.MultiThreadingService;
+import org.example.assignment_inf.models.Employee_Hours_Summary;
+import org.example.assignment_inf.service.EmployeeService;
+import org.example.assignment_inf.service.MultiThreadingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,9 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @RestController
 public class MainController {
@@ -25,6 +29,9 @@ public class MainController {
 
     @Autowired
     private MultiThreadingService mulThService;
+
+    @Autowired
+    private EmployeeService empService;
 
 
     @GetMapping("/")
@@ -62,5 +69,27 @@ public class MainController {
     public String sendMessage(String message) {
         logger.info("Socket Message: " + message);
         return message;
+    }
+
+    // get employees working hours
+    // this data is generated after executing scheduler every week on Sun mid night
+    @GetMapping("/get_employee_working_hours")
+    public ResponseEntity<List<EmployeeHoursSummaryDto>> getEmpSummrize() {
+        List<Employee_Hours_Summary> empHrsList = empService.getAllEmployeeHoursSummary();
+        List<EmployeeHoursSummaryDto> dtoList = fromEmployee_Hours_Summary(empHrsList);
+        return new ResponseEntity<>(dtoList, HttpStatus.OK);
+    }
+
+    public List<EmployeeHoursSummaryDto> fromEmployee_Hours_Summary(List<Employee_Hours_Summary> employeeHoursSummaryList) {
+        return employeeHoursSummaryList.stream()
+                .map(this::fromEmployee_Hours_Summary)
+                .collect(Collectors.toList());
+    }
+
+    public EmployeeHoursSummaryDto fromEmployee_Hours_Summary(Employee_Hours_Summary employeeHoursSummary) {
+        EmployeeHoursSummaryDto dto = new EmployeeHoursSummaryDto();
+        dto.setId(employeeHoursSummary.getId());
+        dto.setTotalHoursWorked(employeeHoursSummary.getTotalHoursWorked());
+        return dto;
     }
 }

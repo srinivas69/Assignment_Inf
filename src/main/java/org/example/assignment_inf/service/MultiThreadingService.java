@@ -1,11 +1,10 @@
-package org.example.assignment_inf.services;
+package org.example.assignment_inf.service;
 
-import org.example.assignment_inf.controllers.MainController;
 import org.example.assignment_inf.exceptions.CustomersNotFoundException;
 import org.example.assignment_inf.exceptions.ProductsNotAvailable;
 import org.example.assignment_inf.models.Customer;
 import org.example.assignment_inf.models.Product;
-import org.example.assignment_inf.repos.MultiThreadingRepository;
+import org.example.assignment_inf.repository.MultiThreadingRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

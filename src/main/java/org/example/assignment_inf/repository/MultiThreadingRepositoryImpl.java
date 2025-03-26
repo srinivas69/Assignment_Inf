@@ -1,4 +1,4 @@
-package org.example.assignment_inf.repos;
+package org.example.assignment_inf.repository;
 
 import org.example.assignment_inf.models.Customer;
 import org.example.assignment_inf.models.Product;
